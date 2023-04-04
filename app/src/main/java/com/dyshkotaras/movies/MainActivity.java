@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Consumer<MoviesList>() {
                     @Override
                     public void accept(MoviesList moviesList) throws Throwable {
-                        Log.d(TAG, moviesList.getMovies().toString());
+                        Log.d(TAG, moviesList.toString());
                     }
                 }, new Consumer<Throwable>() {
                     @Override
