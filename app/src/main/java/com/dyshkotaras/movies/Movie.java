@@ -18,6 +18,9 @@ public class Movie {
     @SerializedName("id")
     private int id;
 
+    @SerializedName("original_language")
+    private String originalLanguage;
+
     @SerializedName("original_title")
     private String originalTitle;
 
@@ -27,8 +30,14 @@ public class Movie {
     @SerializedName("popularity")
     private double popularity;
 
+    @SerializedName("poster_path")
+    private String posterPath;
+
     @SerializedName("release_date")
     private String releaseDate;
+
+    @SerializedName("video")
+    private boolean video;
 
     @SerializedName("vote_average")
     private double voteAverage;
@@ -43,13 +52,28 @@ public class Movie {
                 ", backdropPath='" + backdropPath + '\'' +
                 ", genreIds=" + genreIds +
                 ", id=" + id +
+                ", originalLanguage='" + originalLanguage + '\'' +
                 ", originalTitle='" + originalTitle + '\'' +
                 ", overview='" + overview + '\'' +
                 ", popularity=" + popularity +
+                ", posterPath='" + posterPath + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
+                ", video=" + video +
                 ", voteAverage=" + voteAverage +
                 ", voteCount=" + voteCount +
                 '}';
+    }
+
+    public String getOriginalLanguage() {
+        return originalLanguage;
+    }
+
+    public String getPosterPath() {
+        return posterPath;
+    }
+
+    public boolean isVideo() {
+        return video;
     }
 
     public boolean isAdult() {
