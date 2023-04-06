@@ -1,5 +1,6 @@
 package com.dyshkotaras.movies;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +41,17 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     public void onBindViewHolder(@NonNull MovieViewHolder movieViewHolder, int position) {
         Movie movie = movies.get(position);
         movieViewHolder.textViewVoteAverage.setText(String.valueOf(movie.getVoteAverage()));
+        int circleResId;
+        if (movie.getVoteAverage() > 7) {
+            circleResId = R.drawable.circle_green;
+        } else if (movie.getVoteAverage() > 5) {
+            circleResId = R.drawable.circle_orange;
+        } else {
+            circleResId = R.drawable.circle_red;
+        }
+//        movieViewHolder.textViewVoteAverage.setBackgroundResource(circleResId);
+        Drawable background = ContextCompat.getDrawable(movieViewHolder.itemView.getContext(), circleResId);
+        movieViewHolder.textViewVoteAverage.setBackground(background);
         Glide.with(movieViewHolder.itemView)
                 .load(BASE_URL_iMAGE + movie.getPosterPath())
                 .into(movieViewHolder.imageViewPoster);
