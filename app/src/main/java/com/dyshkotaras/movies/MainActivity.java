@@ -21,8 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private MoviesAdapter moviesAdapter;
     private ProgressBar progressBarLoading;
 
-    private Button buttonPrevious;
-    private Button buttonNext;
+//    private Button buttonPrevious;
+//    private Button buttonNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,18 +45,17 @@ public class MainActivity extends AppCompatActivity {
                         moviesAdapter.setMovies(movies);
                     }
                 });
-        mainViewModel.getVisibleProgressBar().observe(MainActivity.this,
+        mainViewModel.getIsLoading().observe(MainActivity.this,
                 new Observer<Boolean>() {
                     @Override
-                    public void onChanged(Boolean isVisible) {
-                        if (isVisible) {
+                    public void onChanged(Boolean isLoading) {
+                        if (isLoading) {
                             progressBarLoading.setVisibility(View.VISIBLE);
                         } else {
                             progressBarLoading.setVisibility(View.GONE);
                         }
                     }
                 });
-        mainViewModel.loadMovies();
         mainViewModel.getPage().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(Integer integer) {
@@ -75,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
 //                mainViewModel.pageNext();
 //            }
 //        });
-
 
     }
 

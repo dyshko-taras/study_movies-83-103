@@ -22,7 +22,9 @@ public class MainViewModel extends AndroidViewModel {
     private static final String TAG = "MainActivity";
 
     private final MutableLiveData<List<Movie>> moviesListLD = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> visibleProgressBar = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<Integer> page = new MutableLiveData<>(1);
+
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -31,31 +33,36 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        page.setValue(1);
+        loadMovies();
     }
 
     public LiveData<List<Movie>> getMoviesListLD() {
         return moviesListLD;
     }
-
-    public LiveData<Boolean> getVisibleProgressBar() {
-        return visibleProgressBar;
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
+    public LiveData<Integer> getPage() {
+        return page;
     }
 
     public void loadMovies() {
+        Boolean loading = isLoading.getValue();
+        if (loading != null && loading) return;
+        Log.d(TAG, String.valueOf(page.getValue()));
         Disposable disposable = ApiFactory.apiService.loadMovies(page.getValue())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Throwable {
-                        visibleProgressBar.setValue(true);
+                        isLoading.setValue(true);
                     }
                 })
                 .doAfterTerminate(new Action() {
                     @Override
                     public void run() throws Throwable {
-                        visibleProgressBar.setValue(false);
+                        isLoading.setValue(false);
                     }
                 })
                 .subscribe(new Consumer<MoviesList>() {
@@ -85,13 +92,6 @@ public class MainViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.dispose();
-    }
-
-
-    private MutableLiveData<Integer> page = new MutableLiveData<>();
-
-    public LiveData<Integer> getPage() {
-        return page;
     }
 
     public void uploadData() {

@@ -47,7 +47,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder movieViewHolder, int position) {
-        Log.d(TAG, String.valueOf(position));
+//        Log.d(TAG, String.valueOf(position));
         Movie movie = movies.get(position);
         movieViewHolder.textViewVoteAverage.setText(String.valueOf(movie.getVoteAverage()));
         int circleResId;
@@ -64,7 +64,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         Glide.with(movieViewHolder.itemView)
                 .load(BASE_URL_iMAGE + movie.getPosterPath())
                 .into(movieViewHolder.imageViewPoster);
-        if (position == movies.size() - 1 && onReachEndListener != null) {
+        if (position >= movies.size() - 10 && onReachEndListener != null) {
             onReachEndListener.onReachEnd();
         }
     }
