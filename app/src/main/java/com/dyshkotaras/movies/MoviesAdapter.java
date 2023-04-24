@@ -1,6 +1,7 @@
 package com.dyshkotaras.movies;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,19 @@ import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewHolder> {
 
+    private OnReachEndListener onReachEndListener;
     private List<Movie> movies = new ArrayList<>();
     private String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
+    private static final String TAG = "MoviesAdapter";
+
 
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
         notifyDataSetChanged();
+    }
+
+    public MoviesAdapter(OnReachEndListener onReachEndListener) {
+        this.onReachEndListener = onReachEndListener;
     }
 
     @NonNull
@@ -39,6 +47,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
 
     @Override
     public void onBindViewHolder(@NonNull MovieViewHolder movieViewHolder, int position) {
+        Log.d(TAG, String.valueOf(position));
         Movie movie = movies.get(position);
         movieViewHolder.textViewVoteAverage.setText(String.valueOf(movie.getVoteAverage()));
         int circleResId;
@@ -49,12 +58,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
         } else {
             circleResId = R.drawable.circle_red;
         }
-//        movieViewHolder.textViewVoteAverage.setBackgroundResource(circleResId);
-        Drawable background = ContextCompat.getDrawable(movieViewHolder.itemView.getContext(), circleResId);
-        movieViewHolder.textViewVoteAverage.setBackground(background);
+        movieViewHolder.textViewVoteAverage.setBackgroundResource(circleResId);
+//        Drawable background = ContextCompat.getDrawable(movieViewHolder.itemView.getContext(), circleResId);
+//        movieViewHolder.textViewVoteAverage.setBackground(background);
         Glide.with(movieViewHolder.itemView)
                 .load(BASE_URL_iMAGE + movie.getPosterPath())
                 .into(movieViewHolder.imageViewPoster);
+        if (position == movies.size() - 1 && onReachEndListener != null) {
+            onReachEndListener.onReachEnd();
+        }
     }
 
     @Override
@@ -72,6 +84,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
             imageViewPoster = itemView.findViewById(R.id.imageViewPoster);
             textViewVoteAverage = itemView.findViewById(R.id.textViewVoteAverage);
         }
+    }
+
+    interface OnReachEndListener {
+        void onReachEnd();
     }
 
 }

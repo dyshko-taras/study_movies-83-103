@@ -26,7 +26,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    //private int page = 1;
+//    private int page = 1;
 
 
     public MainViewModel(@NonNull Application application) {
@@ -62,7 +62,13 @@ public class MainViewModel extends AndroidViewModel {
                     @Override
                     public void accept(MoviesList moviesList) throws Throwable {
                         //page++;
-                        moviesListLD.setValue(moviesList.getMovies());
+                        if (moviesListLD.getValue() == null ) {
+                            moviesListLD.setValue(moviesList.getMovies());
+                        } else {
+                            List<Movie> list = moviesListLD.getValue();
+                            list.addAll(moviesList.getMovies());
+                            moviesListLD.setValue(list);
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -88,11 +94,19 @@ public class MainViewModel extends AndroidViewModel {
         return page;
     }
 
-    public void pagePrevious() {
-        if (page.getValue() > 1) page.setValue(page.getValue() - 1);
+    public void uploadData() {
+        if (page.getValue() != null) {
+            int pages = page.getValue() + 1;
+            page.setValue(pages);
+        }
     }
 
-    public void pageNext() {
-        page.setValue(page.getValue() + 1);
-    }
+//    public void pagePrevious() {
+//        if (page.getValue() > 1) page.setValue(page.getValue() - 1);
+//    }
+//
+//    public void pageNext() {
+//        page.setValue(page.getValue() + 1);
+//    }
+//
 }

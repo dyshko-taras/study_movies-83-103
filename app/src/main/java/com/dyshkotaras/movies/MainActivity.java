@@ -7,16 +7,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
 import java.util.List;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,7 +29,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        moviesAdapter = new MoviesAdapter();
+        moviesAdapter = new MoviesAdapter(new MoviesAdapter.OnReachEndListener() {
+            @Override
+            public void onReachEnd() {
+                mainViewModel.uploadData();
+            }
+        });
         recyclerViewMovies.setAdapter(moviesAdapter);
         recyclerViewMovies.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
         mainViewModel = new ViewModelProvider(MainActivity.this).get(MainViewModel.class);
@@ -63,18 +63,18 @@ public class MainActivity extends AppCompatActivity {
                 mainViewModel.loadMovies();
             }
         });
-        buttonPrevious.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainViewModel.pagePrevious();
-            }
-        });
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainViewModel.pageNext();
-            }
-        });
+//        buttonPrevious.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mainViewModel.pagePrevious();
+//            }
+//        });
+//        buttonNext.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mainViewModel.pageNext();
+//            }
+//        });
 
 
     }
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
         recyclerViewMovies = findViewById(R.id.recyclerViewMovies);
         progressBarLoading = findViewById(R.id.progressBarLoading);
-        buttonPrevious = findViewById(R.id.buttonPrevious);
-        buttonNext = findViewById(R.id.buttonNext);
+//        buttonPrevious = findViewById(R.id.buttonPrevious);
+//        buttonNext = findViewById(R.id.buttonNext);
     }
 }
