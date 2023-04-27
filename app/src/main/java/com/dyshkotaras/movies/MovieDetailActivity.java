@@ -1,14 +1,20 @@
 package com.dyshkotaras.movies;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import java.util.List;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
@@ -25,9 +31,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private static final String EXTRA_MOVIE = "movie";
     private String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
-
-
-
+    private MovieDetailModel movieDetailModel;
+    private static final String TAG = "MovieDetailModel";
 
 
     @Override
@@ -35,16 +40,24 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         initViews();
+        movieDetailModel = new ViewModelProvider(this).get(MovieDetailModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
+
         Glide.with(this).load(BASE_URL_iMAGE + movie.getBackdropPath()).into(imageViewPoster);
         textViewOriginalTitle.setText(movie.getOriginalTitle());
-        textViewGenres.setText(movie.getGenreIds().toString());
-        textViewReleaseDate.setText(movie.getReleaseDate());
-        textViewOriginalLanguage.setText(movie.getOriginalLanguage());
-        textViewOverview.setText(movie.getOverview());
-        textViewVoteAverage.setText(String.valueOf(movie.getVoteAverage()));
-        textViewVoteCount.setText(String.valueOf(movie.getVoteCount()));
-        textViewPopularity.setText(String.valueOf(movie.getPopularity()));
+        movieDetailModel.getGenres().observe(this, new Observer<List<Genre>>() {
+            @Override
+            public void onChanged(List<Genre> genres) {
+                textViewGenres.setText(movieDetailModel.getTextGenres(movie));
+            }
+        });
+        textViewReleaseDate.setText(String.format("Release date: %s", movie.getReleaseDate()));
+        textViewOriginalLanguage.setText(String.format("Original language: %s", movie.getOriginalLanguage()));
+        textViewOverview.setText(String.format("   %s", movie.getOverview()));
+        Toast.makeText(this,textViewOverview.getText(),Toast.LENGTH_SHORT).show();
+        textViewVoteAverage.setText(String.format("Vote average: %s", movie.getVoteAverage()));
+        textViewVoteCount.setText(String.format("Vote count: %s", movie.getVoteCount()));
+        textViewPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
     }
 
     // methods init views
@@ -66,7 +79,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_MOVIE, movie);
         return intent;
     }
-
 
 
 }
