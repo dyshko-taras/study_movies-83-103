@@ -23,28 +23,53 @@ public class MovieDetailModel extends AndroidViewModel {
         loadGenres();
     }
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private MutableLiveData<List<Genre>> genres = new MutableLiveData<>();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private final MutableLiveData<List<Genre>> genresLD = new MutableLiveData<>();
+    private final MutableLiveData<List<MovieVideos>> movieVideosLD = new MutableLiveData<>();
 
-    public LiveData<List<Genre>> getGenres() {
-        return genres;
+    public LiveData<List<Genre>> getGenresLD() {
+        return genresLD;
+    }
+
+    public LiveData<List<MovieVideos>> getMovieVideosLD() {
+        return movieVideosLD;
     }
 
     private static final String TAG = "MovieDetailModel1";
 
-    public void loadGenres() {
+    private void loadGenres() {
         Disposable disposable = ApiFactory.apiService.loadGenres()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<GenreList>() {
                     @Override
                     public void accept(GenreList genreList) throws Throwable {
-                        genres.setValue(genreList.getGenres());
+                        genresLD.setValue(genreList.getGenres());
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Throwable {
-                        Log.d(TAG, "ERROR");
+                        Log.d(TAG, throwable.toString());
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    public void loadMovieVideos(Movie movie) {
+        Log.d(TAG, String.valueOf(movie.getId()));
+        Disposable disposable = ApiFactory.apiService.loadMovieVideos(movie.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MoviesVideosList>() {
+                    @Override
+                    public void accept(MoviesVideosList moviesVideosList) throws Throwable {
+                        Log.d(TAG, moviesVideosList.getMovieVideosList().toString());
+                        movieVideosLD.setValue(moviesVideosList.getMovieVideosList());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        Log.d(TAG, throwable.toString());
                     }
                 });
         compositeDisposable.add(disposable);
@@ -60,10 +85,12 @@ public class MovieDetailModel extends AndroidViewModel {
     public List<String> getGenresMovie(Movie movie) {
         List<Integer> movieGenreIds = movie.getGenreIds();
         List<String > movieGenre = new ArrayList<>();
-        for (int i = 0; i < genres.getValue().size();i++) {
-            for(int j = 0; j < movieGenreIds.size(); j++) {
-                if (genres.getValue().get(i).getId() == movieGenreIds.get(j)) {
-                    movieGenre.add(genres.getValue().get(i).getName());
+        if (genresLD.getValue() != null) {
+            for (int i = 0; i < genresLD.getValue().size(); i++) {
+                for(int j = 0; j < movieGenreIds.size(); j++) {
+                    if (genresLD.getValue().get(i).getId() == movieGenreIds.get(j)) {
+                        movieGenre.add(genresLD.getValue().get(i).getName());
+                    }
                 }
             }
         }

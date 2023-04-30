@@ -2,6 +2,7 @@ package com.dyshkotaras.movies;
 
 import io.reactivex.rxjava3.core.Single;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -12,4 +13,7 @@ public interface ApiService {
 
     @GET("genre/movie/list?api_key=68cea46f5752df5e407a4dccf82c1522&language=en-US")
     Single<GenreList> loadGenres();
+
+    @GET("movie/{id}/videos?api_key=68cea46f5752df5e407a4dccf82c1522&language=en-US")
+    Single<MoviesVideosList> loadMovieVideos(@Path("id") int id);
 }
