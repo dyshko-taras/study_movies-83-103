@@ -15,10 +15,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class MovieDetailModel extends AndroidViewModel {
-    public MovieDetailModel(@NonNull Application application) {
+public class MovieDetailViewModel extends AndroidViewModel {
+    public MovieDetailViewModel(@NonNull Application application) {
         super(application);
         loadGenres();
     }
@@ -41,10 +42,16 @@ public class MovieDetailModel extends AndroidViewModel {
         Disposable disposable = ApiFactory.apiService.loadGenres()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<GenreList>() {
+                .map(new Function<GenreList, List<Genre>>() {
                     @Override
-                    public void accept(GenreList genreList) throws Throwable {
-                        genresLD.setValue(genreList.getGenres());
+                    public List<Genre> apply(GenreList genreList) throws Throwable {
+                        return genreList.getGenres();
+                    }
+                })
+                .subscribe(new Consumer<List<Genre>>() {
+                    @Override
+                    public void accept(List<Genre> genres) throws Throwable {
+                        genresLD.setValue(genres);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -55,16 +62,22 @@ public class MovieDetailModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void loadMovieVideos(Movie movie) {
-        Log.d(TAG, String.valueOf(movie.getId()));
-        Disposable disposable = ApiFactory.apiService.loadMovieVideos(movie.getId())
+    public void loadMovieVideos(int id) {
+        Log.d(TAG, String.valueOf(id));
+        Disposable disposable = ApiFactory.apiService.loadMovieVideos(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MoviesVideosList>() {
+                .map(new Function<MoviesVideosList, List<MovieVideos>>() {
                     @Override
-                    public void accept(MoviesVideosList moviesVideosList) throws Throwable {
-                        Log.d(TAG, moviesVideosList.getMovieVideosList().toString());
-                        movieVideosLD.setValue(moviesVideosList.getMovieVideosList());
+                    public List<MovieVideos> apply(MoviesVideosList moviesVideosList) throws Throwable {
+                        return moviesVideosList.getMovieVideosList();
+                    }
+                })
+                .subscribe(new Consumer<List<MovieVideos>>() {
+                    @Override
+                    public void accept(List<MovieVideos> movieVideos) throws Throwable {
+                        Log.d(TAG, movieVideos.toString());
+                        movieVideosLD.setValue(movieVideos);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

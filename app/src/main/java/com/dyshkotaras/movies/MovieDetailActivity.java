@@ -31,8 +31,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private static final String EXTRA_MOVIE = "movie";
     private static final String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
-    private MovieDetailModel movieDetailModel;
-    private static final String TAG = "MovieDetailModel";
+    private MovieDetailViewModel viewModel;
+    private static final String TAG = "MovieDetailActivity";
 
 
     @Override
@@ -40,24 +40,24 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         initViews();
-        movieDetailModel = new ViewModelProvider(this).get(MovieDetailModel.class);
+        viewModel = new ViewModelProvider(this).get(MovieDetailViewModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
-        movieDetailModel.loadMovieVideos(movie);
+        viewModel.loadMovieVideos(movie.getId());
 
 
-        movieDetailModel.getMovieVideosLD().observe(this, new Observer<List<MovieVideos>>() {
+        viewModel.getMovieVideosLD().observe(this, new Observer<List<MovieVideos>>() {
             @Override
             public void onChanged(List<MovieVideos> movieVideos) {
-                Log.d("TARASS",movieVideos.toString());
+                Log.d(TAG,movieVideos.toString());
             }
         });
 
         Glide.with(this).load(BASE_URL_iMAGE + movie.getBackdropPath()).into(imageViewPoster);
         textViewOriginalTitle.setText(movie.getOriginalTitle());
-        movieDetailModel.getGenresLD().observe(this, new Observer<List<Genre>>() {
+        viewModel.getGenresLD().observe(this, new Observer<List<Genre>>() {
             @Override
             public void onChanged(List<Genre> genres) {
-                textViewGenres.setText(movieDetailModel.getTextGenres(movie));
+                textViewGenres.setText(viewModel.getTextGenres(movie));
             }
         });
         textViewReleaseDate.setText(String.format("Release date: %s", movie.getReleaseDate()));
