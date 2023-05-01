@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
@@ -28,6 +29,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView textViewVoteAverage;
     private TextView textViewVoteCount;
     private TextView textViewPopularity;
+    private RecyclerView recyclerViewMovieVideos;
+    private MovieVideosAdapter movieVideosAdapter;
 
     private static final String EXTRA_MOVIE = "movie";
     private static final String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
@@ -40,15 +43,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         initViews();
+
         viewModel = new ViewModelProvider(this).get(MovieDetailViewModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
         viewModel.loadMovieVideos(movie.getId());
-
+        movieVideosAdapter = new MovieVideosAdapter();
+        recyclerViewMovieVideos.setAdapter(movieVideosAdapter);
 
         viewModel.getMovieVideosLD().observe(this, new Observer<List<MovieVideos>>() {
             @Override
             public void onChanged(List<MovieVideos> movieVideos) {
-                Log.d(TAG,movieVideos.toString());
+                movieVideosAdapter.setMovieVideosList(movieVideos);
             }
         });
 
@@ -85,6 +90,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage = findViewById(R.id.textViewVoteAverage);
         textViewVoteCount = findViewById(R.id.textViewVoteCount);
         textViewPopularity = findViewById(R.id.textViewPopularity);
+        recyclerViewMovieVideos = findViewById(R.id.recyclerViewMovieVideos);
     }
 
     // methods new intent
