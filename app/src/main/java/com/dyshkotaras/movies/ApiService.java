@@ -15,5 +15,5 @@ public interface ApiService {
     Single<GenreList> loadGenres();
 
     @GET("movie/{id}/videos?api_key=68cea46f5752df5e407a4dccf82c1522&language=en-US")
-    Single<MoviesVideosList> loadMovieVideos(@Path("id") int id);
+    Single<TrailerList> loadTrailers(@Path("id") int id);
 }

@@ -2,10 +2,12 @@ package com.dyshkotaras.movies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -30,12 +32,14 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView textViewVoteCount;
     private TextView textViewPopularity;
     private RecyclerView recyclerViewMovieVideos;
-    private MovieVideosAdapter movieVideosAdapter;
+    private TrailerAdapter trailerAdapter;
+    private MovieDetailViewModel viewModel;
 
     private static final String EXTRA_MOVIE = "movie";
     private static final String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
-    private MovieDetailViewModel viewModel;
+    private static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
     private static final String TAG = "MovieDetailActivity";
+    public static final String YOUTUBE_PACKAGE_NAME = "com.google.android.youtube";
 
 
     @Override
@@ -46,14 +50,19 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MovieDetailViewModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
-        viewModel.loadMovieVideos(movie.getId());
-        movieVideosAdapter = new MovieVideosAdapter();
-        recyclerViewMovieVideos.setAdapter(movieVideosAdapter);
-
-        viewModel.getMovieVideosLD().observe(this, new Observer<List<MovieVideos>>() {
+        viewModel.loadTrailers(movie.getId());
+        trailerAdapter = new TrailerAdapter(new TrailerAdapter.OnTrailerClickListener() {
             @Override
-            public void onChanged(List<MovieVideos> movieVideos) {
-                movieVideosAdapter.setMovieVideosList(movieVideos);
+            public void onTrailerClick(Trailer trailer) {
+                launchYoutube(MovieDetailActivity.this, YOUTUBE_URL + trailer.getKey());
+            }
+        });
+        recyclerViewMovieVideos.setAdapter(trailerAdapter);
+
+        viewModel.getTrailersListLD().observe(this, new Observer<List<Trailer>>() {
+            @Override
+            public void onChanged(List<Trailer> movieVideos) {
+                trailerAdapter.setTrailerList(movieVideos);
             }
         });
 
@@ -76,6 +85,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage.setText(String.format("Vote average: %s", movie.getVoteAverage()));
         textViewVoteCount.setText(String.format("Vote count: %s", movie.getVoteCount()));
         textViewPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
+
+
     }
 
     // methods init views
@@ -98,6 +109,16 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent intent = new Intent(context, MovieDetailActivity.class);
         intent.putExtra(EXTRA_MOVIE, movie);
         return intent;
+    }
+
+    public static void launchYoutube(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage(YOUTUBE_PACKAGE_NAME);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(context, "YouTube app is not installed", Toast.LENGTH_SHORT).show();
+        }
     }
 
 

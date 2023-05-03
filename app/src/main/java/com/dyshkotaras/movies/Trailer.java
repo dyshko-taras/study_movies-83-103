@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MovieVideos {
+public class Trailer {
 
     @SerializedName("name")
     private final String name;
@@ -18,7 +18,7 @@ public class MovieVideos {
     @SerializedName("key")
     private final String key;
 
-    public MovieVideos(String name, String type, String site, String key) {
+    public Trailer(String name, String type, String site, String key) {
         this.name = name;
         this.type = type;
         this.site = site;

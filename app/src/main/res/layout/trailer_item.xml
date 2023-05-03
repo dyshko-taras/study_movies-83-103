@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textViewNameVideo"
+            android:id="@+id/textViewNameTrailer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="left"
@@ -33,9 +33,9 @@
             android:layout_marginEnd="15dp"
             android:background="@android:drawable/ic_media_play"
             android:contentDescription="@null"
-            app:layout_constraintBottom_toBottomOf="@+id/textViewNameVideo"
-            app:layout_constraintEnd_toEndOf="@id/textViewNameVideo"
-            app:layout_constraintTop_toTopOf="@id/textViewNameVideo" />
+            app:layout_constraintBottom_toBottomOf="@+id/textViewNameTrailer"
+            app:layout_constraintEnd_toEndOf="@id/textViewNameTrailer"
+            app:layout_constraintTop_toTopOf="@id/textViewNameTrailer" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

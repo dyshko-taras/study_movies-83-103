@@ -119,7 +119,6 @@
         android:id="@+id/recyclerViewMovieVideos"
         android:layout_width="match_parent"
         android:nestedScrollingEnabled="false"
-        app:reverseLayout="true"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/linearShortInfo"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

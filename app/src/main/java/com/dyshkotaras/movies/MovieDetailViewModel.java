@@ -1,6 +1,7 @@
 package com.dyshkotaras.movies;
 
 import android.app.Application;
+import android.app.TaskInfo;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -26,17 +29,18 @@ public class MovieDetailViewModel extends AndroidViewModel {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final MutableLiveData<List<Genre>> genresLD = new MutableLiveData<>();
-    private final MutableLiveData<List<MovieVideos>> movieVideosLD = new MutableLiveData<>();
+    private final MutableLiveData<List<Trailer>> trailersListLD = new MutableLiveData<>();
 
     public LiveData<List<Genre>> getGenresLD() {
         return genresLD;
     }
-
-    public LiveData<List<MovieVideos>> getMovieVideosLD() {
-        return movieVideosLD;
+    public LiveData<List<Trailer>> getTrailersListLD() {
+        return trailersListLD;
     }
 
-    private static final String TAG = "MovieDetailModel1";
+    private static final String TAG = "MovieDetailModel";
+    private static final String SITE_YOUTUBE = "YouTube";
+
 
     private void loadGenres() {
         Disposable disposable = ApiFactory.apiService.loadGenres()
@@ -62,22 +66,29 @@ public class MovieDetailViewModel extends AndroidViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void loadMovieVideos(int id) {
+    public void loadTrailers(int id) {
         Log.d(TAG, String.valueOf(id));
-        Disposable disposable = ApiFactory.apiService.loadMovieVideos(id)
+        Disposable disposable = ApiFactory.apiService.loadTrailers(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<MoviesVideosList, List<MovieVideos>>() {
+                .map(new Function<TrailerList, List<Trailer>>() {
                     @Override
-                    public List<MovieVideos> apply(MoviesVideosList moviesVideosList) throws Throwable {
-                        return moviesVideosList.getMovieVideosList();
+                    public List<Trailer> apply(TrailerList trailerList) throws Throwable {
+                        return trailerList.getTrailerList();
                     }
                 })
-                .subscribe(new Consumer<List<MovieVideos>>() {
+                .subscribe(new Consumer<List<Trailer>>() {
                     @Override
-                    public void accept(List<MovieVideos> movieVideos) throws Throwable {
-                        Log.d(TAG, movieVideos.toString());
-                        movieVideosLD.setValue(movieVideos);
+                    public void accept(List<Trailer> trailers) throws Throwable {
+                        Log.d(TAG, trailers.toString());
+                        for (Iterator<Trailer> iterator = trailers.listIterator(); iterator.hasNext();) {
+                            String site = iterator.next().getSite();
+                            if (!site.equals(SITE_YOUTUBE)) {
+                                iterator.remove();
+                            }
+                        }
+                        Collections.reverse(trailers);
+                        trailersListLD.setValue(trailers);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
