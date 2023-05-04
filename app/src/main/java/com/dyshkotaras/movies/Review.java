@@ -11,7 +11,7 @@ public class Review {
     private AuthorDetails authorDetails;
 
     @SerializedName("created_at")
-    private String dataCreation;
+    private String dateCreation;
 
     @SerializedName("content")
     private String content;
@@ -21,7 +21,7 @@ public class Review {
         return "Review{" +
                 "nameAuthor='" + nameAuthor + '\'' +
                 ", authorDetails=" + authorDetails +
-                ", dataCreation='" + dataCreation + '\'' +
+                ", dataCreation='" + dateCreation + '\'' +
                 ", content='" + content + '\'' +
                 '}';
     }
@@ -34,8 +34,8 @@ public class Review {
         return authorDetails;
     }
 
-    public String getDataCreation() {
-        return dataCreation;
+    public String getDateCreation() {
+        return dateCreation;
     }
 
     public String getContent() {

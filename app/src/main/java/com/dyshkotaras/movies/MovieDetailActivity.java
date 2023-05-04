@@ -31,14 +31,17 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView textViewVoteAverage;
     private TextView textViewVoteCount;
     private TextView textViewPopularity;
-    private RecyclerView recyclerViewMovieVideos;
-    private TrailerAdapter trailerAdapter;
     private MovieDetailViewModel viewModel;
+    private RecyclerView recyclerViewTrailer;
+    private TrailerAdapter trailerAdapter;
+    private RecyclerView recyclerViewReview;
+    private ReviewAdapter reviewAdapter;
+
 
     private static final String EXTRA_MOVIE = "movie";
     private static final String BASE_URL_iMAGE = "https://image.tmdb.org/t/p/w500";
     private static final String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
-    private static final String TAG = "MovieDetailActivity";
+    private static final String TAG = "MovieDetailActivity1";
     public static final String YOUTUBE_PACKAGE_NAME = "com.google.android.youtube";
 
 
@@ -54,12 +57,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         viewModel.loadTrailers(movie.getId());
         viewModel.loadReviews(movie.getId());
 
-        trailerAdapter = new TrailerAdapter(new TrailerAdapter.OnTrailerClickListener() {
-            @Override
-            public void onTrailerClick(Trailer trailer) {
-                launchYoutube(MovieDetailActivity.this, YOUTUBE_URL + trailer.getKey());
-            }
-        });
         viewModel.getTrailersLD().observe(this, new Observer<List<Trailer>>() {
             @Override
             public void onChanged(List<Trailer> movieVideos) {
@@ -76,10 +73,20 @@ public class MovieDetailActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Review> reviews) {
                 Log.d(TAG,reviews.toString());
+                reviewAdapter.setReviews(reviews);
             }
         });
 
-        recyclerViewMovieVideos.setAdapter(trailerAdapter);
+        trailerAdapter = new TrailerAdapter(new TrailerAdapter.OnTrailerClickListener() {
+            @Override
+            public void onTrailerClick(Trailer trailer) {
+                launchYoutube(MovieDetailActivity.this, YOUTUBE_URL + trailer.getKey());
+            }
+        });
+        reviewAdapter = new ReviewAdapter();
+
+        recyclerViewTrailer.setAdapter(trailerAdapter);
+        recyclerViewReview.setAdapter(reviewAdapter);
 
         Glide.with(this).load(BASE_URL_iMAGE + movie.getBackdropPath()).into(imageViewPoster);
         textViewOriginalTitle.setText(movie.getOriginalTitle());
@@ -108,7 +115,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage = findViewById(R.id.textViewVoteAverage);
         textViewVoteCount = findViewById(R.id.textViewVoteCount);
         textViewPopularity = findViewById(R.id.textViewPopularity);
-        recyclerViewMovieVideos = findViewById(R.id.recyclerViewMovieVideos);
+        recyclerViewTrailer = findViewById(R.id.recyclerViewTrailer);
+        recyclerViewReview = findViewById(R.id.recyclerViewReview);
     }
 
     // methods new intent
@@ -121,11 +129,13 @@ public class MovieDetailActivity extends AppCompatActivity {
     public static void launchYoutube(Context context, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setPackage(YOUTUBE_PACKAGE_NAME);
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, "YouTube app is not installed", Toast.LENGTH_SHORT).show();
-        }
+        context.startActivity(intent);
+//        if (intent.resolveActivity(context.getPackageManager()) != null) {
+//            context.startActivity(intent);
+//        } else {
+//            Log.d(TAG,String.valueOf(context.getPackageManager() == null));
+//            Toast.makeText(context, "YouTube app is not installed", Toast.LENGTH_SHORT).show();
+//        }
     }
 
 

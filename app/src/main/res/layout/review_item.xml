@@ -3,7 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:id="@+id/reviewCardView"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+
+    tools:cardBackgroundColor="@android:color/darker_gray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -16,10 +20,10 @@
             android:layout_width="48dp"
             android:layout_height="50dp"
             android:layout_margin="20dp"
+            android:contentDescription="@null"
             android:src="@android:drawable/ic_menu_gallery"
             app:layout_constraintStart_toStartOf="@id/constraintLayout"
-            app:layout_constraintTop_toTopOf="@id/constraintLayout"
-            android:contentDescription="@null" />
+            app:layout_constraintTop_toTopOf="@id/constraintLayout" />
 
         <TextView
             android:id="@+id/nameReviewTextView"
@@ -27,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:textStyle="italic|bold"
+            app:layout_constraintBottom_toBottomOf="@id/avatarReviewImageView"
             app:layout_constraintStart_toEndOf="@id/avatarReviewImageView"
             app:layout_constraintTop_toTopOf="@id/avatarReviewImageView"
-            app:layout_constraintBottom_toBottomOf="@id/avatarReviewImageView"
-            tools:text="Taras"/>
+            tools:text="Taras" />
 
         <TextView
             android:id="@+id/ratingReviewTextView"
@@ -45,20 +49,29 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/btn_star"
             android:layout_marginStart="2dp"
-            app:layout_constraintStart_toEndOf="@+id/ratingReviewTextView"
-            app:layout_constraintTop_toTopOf="@id/ratingReviewTextView"
+            android:contentDescription="@null"
+            android:src="@android:drawable/btn_star"
             app:layout_constraintBottom_toBottomOf="@id/ratingReviewTextView"
-            android:contentDescription="@null" />
+            app:layout_constraintStart_toEndOf="@+id/ratingReviewTextView"
+            app:layout_constraintTop_toTopOf="@id/ratingReviewTextView" />
 
         <TextView
-            android:layout_width="match_parent"
             android:id="@+id/textReviewTextView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             app:layout_constraintTop_toBottomOf="@id/avatarReviewImageView"
             tools:text="@string/appbar_scrolling_view_behavior" />
+
+        <TextView
+            android:id="@+id/dateReviewTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textReviewTextView"
+            tools:text="2019-09-03" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
