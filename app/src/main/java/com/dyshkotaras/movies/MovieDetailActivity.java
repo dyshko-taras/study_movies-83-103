@@ -50,30 +50,39 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(MovieDetailViewModel.class);
         Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
+
         viewModel.loadTrailers(movie.getId());
+        viewModel.loadReviews(movie.getId());
+
         trailerAdapter = new TrailerAdapter(new TrailerAdapter.OnTrailerClickListener() {
             @Override
             public void onTrailerClick(Trailer trailer) {
                 launchYoutube(MovieDetailActivity.this, YOUTUBE_URL + trailer.getKey());
             }
         });
-        recyclerViewMovieVideos.setAdapter(trailerAdapter);
-
-        viewModel.getTrailersListLD().observe(this, new Observer<List<Trailer>>() {
+        viewModel.getTrailersLD().observe(this, new Observer<List<Trailer>>() {
             @Override
             public void onChanged(List<Trailer> movieVideos) {
                 trailerAdapter.setTrailerList(movieVideos);
             }
         });
-
-        Glide.with(this).load(BASE_URL_iMAGE + movie.getBackdropPath()).into(imageViewPoster);
-        textViewOriginalTitle.setText(movie.getOriginalTitle());
         viewModel.getGenresLD().observe(this, new Observer<List<Genre>>() {
             @Override
             public void onChanged(List<Genre> genres) {
                 textViewGenres.setText(viewModel.getTextGenres(movie));
             }
         });
+        viewModel.getReviewsLD().observe(this, new Observer<List<Review>>() {
+            @Override
+            public void onChanged(List<Review> reviews) {
+                Log.d(TAG,reviews.toString());
+            }
+        });
+
+        recyclerViewMovieVideos.setAdapter(trailerAdapter);
+
+        Glide.with(this).load(BASE_URL_iMAGE + movie.getBackdropPath()).into(imageViewPoster);
+        textViewOriginalTitle.setText(movie.getOriginalTitle());
         textViewReleaseDate.setText(String.format("Release date: %s", movie.getReleaseDate()));
         textViewOriginalLanguage.setText(String.format("Original language: %s", movie.getOriginalLanguage()));
         if (movie.isAdult()) {
@@ -85,8 +94,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage.setText(String.format("Vote average: %s", movie.getVoteAverage()));
         textViewVoteCount.setText(String.format("Vote count: %s", movie.getVoteCount()));
         textViewPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
-
-
     }
 
     // methods init views

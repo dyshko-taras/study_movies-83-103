@@ -28,13 +28,15 @@ public class Trailer {
     @NonNull
     @Override
     public String toString() {
-        return "MovieVideos{" +
+        return "Trailer{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", site='" + site + '\'' +
                 ", key='" + key + '\'' +
                 '}';
     }
+
+
 
     public String getName() {
         return name;

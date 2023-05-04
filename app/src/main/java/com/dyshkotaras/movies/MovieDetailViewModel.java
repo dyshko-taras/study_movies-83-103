@@ -1,7 +1,6 @@
 package com.dyshkotaras.movies;
 
 import android.app.Application;
-import android.app.TaskInfo;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -29,13 +28,19 @@ public class MovieDetailViewModel extends AndroidViewModel {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final MutableLiveData<List<Genre>> genresLD = new MutableLiveData<>();
-    private final MutableLiveData<List<Trailer>> trailersListLD = new MutableLiveData<>();
+    private final MutableLiveData<List<Trailer>> trailersLD = new MutableLiveData<>();
+    private final MutableLiveData<List<Review>> reviewsLD = new MutableLiveData<>();
 
     public LiveData<List<Genre>> getGenresLD() {
         return genresLD;
     }
-    public LiveData<List<Trailer>> getTrailersListLD() {
-        return trailersListLD;
+
+    public LiveData<List<Trailer>> getTrailersLD() {
+        return trailersLD;
+    }
+
+    public LiveData<List<Review>> getReviewsLD() {
+        return reviewsLD;
     }
 
     private static final String TAG = "MovieDetailModel";
@@ -80,20 +85,44 @@ public class MovieDetailViewModel extends AndroidViewModel {
                 .subscribe(new Consumer<List<Trailer>>() {
                     @Override
                     public void accept(List<Trailer> trailers) throws Throwable {
-                        Log.d(TAG, trailers.toString());
-                        for (Iterator<Trailer> iterator = trailers.listIterator(); iterator.hasNext();) {
+//                        Log.d(TAG, trailers.toString());
+                        for (Iterator<Trailer> iterator = trailers.listIterator(); iterator.hasNext(); ) {
                             String site = iterator.next().getSite();
                             if (!site.equals(SITE_YOUTUBE)) {
                                 iterator.remove();
                             }
                         }
                         Collections.reverse(trailers);
-                        trailersListLD.setValue(trailers);
+                        trailersLD.setValue(trailers);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Throwable {
                         Log.d(TAG, throwable.toString());
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    public void loadReviews(int id) {
+        Disposable disposable = ApiFactory.apiService.loadReviews(id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<ReviewList, List<Review>>() {
+                    @Override
+                    public List<Review> apply(ReviewList reviewList) throws Throwable {
+                        return reviewList.getReviews();
+                    }
+                })
+                .subscribe(new Consumer<List<Review>>() {
+                    @Override
+                    public void accept(List<Review> reviews) throws Throwable {
+                        reviewsLD.setValue(reviews);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Throwable {
+                        Log.d(TAG,throwable.toString());
                     }
                 });
         compositeDisposable.add(disposable);
@@ -108,10 +137,10 @@ public class MovieDetailViewModel extends AndroidViewModel {
 
     public List<String> getGenresMovie(Movie movie) {
         List<Integer> movieGenreIds = movie.getGenreIds();
-        List<String > movieGenre = new ArrayList<>();
+        List<String> movieGenre = new ArrayList<>();
         if (genresLD.getValue() != null) {
             for (int i = 0; i < genresLD.getValue().size(); i++) {
-                for(int j = 0; j < movieGenreIds.size(); j++) {
+                for (int j = 0; j < movieGenreIds.size(); j++) {
                     if (genresLD.getValue().get(i).getId() == movieGenreIds.get(j)) {
                         movieGenre.add(genresLD.getValue().get(i).getName());
                     }
@@ -122,6 +151,6 @@ public class MovieDetailViewModel extends AndroidViewModel {
     }
 
     public String getTextGenres(Movie movie) {
-        return String.format("Genre: %s.",String.join(", ",getGenresMovie(movie)).toLowerCase());
+        return String.format("Genre: %s.", String.join(", ", getGenresMovie(movie)).toLowerCase());
     }
 }

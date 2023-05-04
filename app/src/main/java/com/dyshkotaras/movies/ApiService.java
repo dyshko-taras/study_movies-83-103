@@ -16,4 +16,9 @@ public interface ApiService {
 
     @GET("movie/{id}/videos?api_key=68cea46f5752df5e407a4dccf82c1522&language=en-US")
     Single<TrailerList> loadTrailers(@Path("id") int id);
+
+    @GET("movie/{id}/reviews?api_key=68cea46f5752df5e407a4dccf82c1522&language=en-US&page=1")
+    Single<ReviewList> loadReviews(@Path("id") int id);
+
+
 }
