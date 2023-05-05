@@ -1,11 +1,23 @@
 package com.dyshkotaras.movies;
 
+import androidx.annotation.NonNull;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
+@Entity(tableName = "favourite_movie")
 public class Movie implements Serializable {
+
+    @PrimaryKey
+    @NonNull
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("adult")
     private boolean adult;
@@ -15,9 +27,6 @@ public class Movie implements Serializable {
 
     @SerializedName("genre_ids")
     private List<Integer> genreIds;
-
-    @SerializedName("id")
-    private int id;
 
     @SerializedName("original_language")
     private String originalLanguage;
@@ -36,9 +45,6 @@ public class Movie implements Serializable {
 
     @SerializedName("release_date")
     private String releaseDate;
-
-    @SerializedName("video")
-    private boolean video;
 
     @SerializedName("vote_average")
     private double voteAverage;
@@ -59,7 +65,6 @@ public class Movie implements Serializable {
                 ", popularity=" + popularity +
                 ", posterPath='" + posterPath + '\'' +
                 ", releaseDate='" + releaseDate + '\'' +
-                ", video=" + video +
                 ", voteAverage=" + voteAverage +
                 ", voteCount=" + voteCount +
                 '}';
@@ -71,10 +76,6 @@ public class Movie implements Serializable {
 
     public String getPosterPath() {
         return posterPath;
-    }
-
-    public boolean isVideo() {
-        return video;
     }
 
     public boolean isAdult() {
@@ -115,5 +116,82 @@ public class Movie implements Serializable {
 
     public int getVoteCount() {
         return voteCount;
+    }
+
+    public Movie() {
+    }
+
+    public Movie(int id,
+                 boolean adult,
+                 String backdropPath,
+                 List<Integer> genreIds,
+                 String originalLanguage,
+                 String originalTitle,
+                 String overview,
+                 double popularity,
+                 String posterPath,
+                 String releaseDate,
+                 double voteAverage,
+                 int voteCount) {
+        this.id = id;
+        this.adult = adult;
+        this.backdropPath = backdropPath;
+        this.genreIds = genreIds;
+        this.originalLanguage = originalLanguage;
+        this.originalTitle = originalTitle;
+        this.overview = overview;
+        this.popularity = popularity;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
+        this.voteCount = voteCount;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setAdult(boolean adult) {
+        this.adult = adult;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setGenreIds(List<Integer> genreIds) {
+        this.genreIds = genreIds;
+    }
+
+    public void setOriginalLanguage(String originalLanguage) {
+        this.originalLanguage = originalLanguage;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setVoteAverage(double voteAverage) {
+        this.voteAverage = voteAverage;
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
     }
 }

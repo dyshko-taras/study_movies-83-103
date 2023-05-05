@@ -18,6 +18,10 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class MovieDetailActivity extends AppCompatActivity {
 
     //init views
@@ -72,7 +76,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         viewModel.getReviewsLD().observe(this, new Observer<List<Review>>() {
             @Override
             public void onChanged(List<Review> reviews) {
-                Log.d(TAG,reviews.toString());
+                Log.d(TAG, reviews.toString());
                 reviewAdapter.setReviews(reviews);
             }
         });
@@ -101,6 +105,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage.setText(String.format("Vote average: %s", movie.getVoteAverage()));
         textViewVoteCount.setText(String.format("Vote count: %s", movie.getVoteCount()));
         textViewPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
+        MovieDao movieDao = MovieDataBase.getInstance(getApplication()).movieDao();
+        movieDao.addFavouriteMovies(movie)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Throwable {
+
+                    }
+                });
+
     }
 
     // methods init views
