@@ -16,6 +16,7 @@ import java.util.List;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Action;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -24,12 +25,21 @@ public class MovieDetailViewModel extends AndroidViewModel {
     public MovieDetailViewModel(@NonNull Application application) {
         super(application);
         loadGenres();
+        movieDao = MovieDataBase.getInstance(application).movieDao();
+
     }
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final MutableLiveData<List<Genre>> genresLD = new MutableLiveData<>();
     private final MutableLiveData<List<Trailer>> trailersLD = new MutableLiveData<>();
     private final MutableLiveData<List<Review>> reviewsLD = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isAdded = new MutableLiveData<>(false);
+
+    private MovieDao movieDao;
+
+    private static final String TAG = "MovieDetailModel";
+    private static final String SITE_YOUTUBE = "YouTube";
+
 
     public LiveData<List<Genre>> getGenresLD() {
         return genresLD;
@@ -43,8 +53,11 @@ public class MovieDetailViewModel extends AndroidViewModel {
         return reviewsLD;
     }
 
-    private static final String TAG = "MovieDetailModel";
-    private static final String SITE_YOUTUBE = "YouTube";
+    public LiveData<Movie> getFavouriteMovie(int movieId) {
+        return movieDao.getFavouriteMovies(movieId);
+    }
+
+
 
 
     private void loadGenres() {
@@ -125,6 +138,20 @@ public class MovieDetailViewModel extends AndroidViewModel {
                         Log.d(TAG,throwable.toString());
                     }
                 });
+        compositeDisposable.add(disposable);
+    }
+
+    public void addFavouriteMovies(Movie movie) {
+        Disposable disposable = movieDao.addFavouriteMovies(movie)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
+        compositeDisposable.add(disposable);
+    }
+
+    public void removeFavouriteMovies(Movie movie) {
+        Disposable disposable = movieDao.removeFavouriteMovies(movie)
+                .subscribeOn(Schedulers.io())
+                .subscribe();
         compositeDisposable.add(disposable);
     }
 

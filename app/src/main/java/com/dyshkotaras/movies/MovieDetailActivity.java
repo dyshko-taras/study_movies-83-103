@@ -2,14 +2,17 @@ package com.dyshkotaras.movies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +43,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TrailerAdapter trailerAdapter;
     private RecyclerView recyclerViewReview;
     private ReviewAdapter reviewAdapter;
+    private ImageView imageViewStar;
 
 
     private static final String EXTRA_MOVIE = "movie";
@@ -80,6 +84,31 @@ public class MovieDetailActivity extends AppCompatActivity {
                 reviewAdapter.setReviews(reviews);
             }
         });
+        Drawable starOff = ContextCompat.getDrawable(this, android.R.drawable.btn_star_big_off);
+        Drawable starOn = ContextCompat.getDrawable(this, android.R.drawable.btn_star_big_on);
+        viewModel.getFavouriteMovie(movie.getId()).observe(this, new Observer<Movie>() {
+            @Override
+            public void onChanged(Movie movieFromDb) {
+                if (movieFromDb == null) {
+                    imageViewStar.setImageDrawable(starOff);
+                    imageViewStar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            viewModel.addFavouriteMovies(movie);
+                        }
+                    });
+                } else {
+                    imageViewStar.setImageDrawable(starOn);
+                    imageViewStar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            viewModel.removeFavouriteMovies(movie);
+                        }
+                    });
+                }
+            }
+        });
+
 
         trailerAdapter = new TrailerAdapter(new TrailerAdapter.OnTrailerClickListener() {
             @Override
@@ -105,17 +134,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewVoteAverage.setText(String.format("Vote average: %s", movie.getVoteAverage()));
         textViewVoteCount.setText(String.format("Vote count: %s", movie.getVoteCount()));
         textViewPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
-        MovieDao movieDao = MovieDataBase.getInstance(getApplication()).movieDao();
-        movieDao.addFavouriteMovies(movie)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action() {
-                    @Override
-                    public void run() throws Throwable {
-
-                    }
-                });
-
     }
 
     // methods init views
@@ -132,6 +150,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         textViewPopularity = findViewById(R.id.textViewPopularity);
         recyclerViewTrailer = findViewById(R.id.recyclerViewTrailer);
         recyclerViewReview = findViewById(R.id.recyclerViewReview);
+        imageViewStar = findViewById(R.id.imageViewStar);
     }
 
     // methods new intent

@@ -2,6 +2,7 @@ package com.dyshkotaras.movies;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -19,8 +20,10 @@ public interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable addFavouriteMovies(Movie movie);
 
-    @Query("DELETE FROM FAVOURITE_MOVIE WHERE id = :movieId")
-    Completable removeFavouriteMovies(int movieId);
+//    @Query("DELETE FROM FAVOURITE_MOVIE WHERE id = :movieId")
+//    Completable removeFavouriteMovies(int movieId);
+    @Delete
+    Completable removeFavouriteMovies(Movie movie);
 
     @Query("SELECT * FROM FAVOURITE_MOVIE WHERE id = :movieId")
     LiveData<Movie> getFavouriteMovies(int movieId);
