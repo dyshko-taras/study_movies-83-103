@@ -29,11 +29,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = FavouriteMovieActivity.newIntent(this);
+        startActivity(intent);
         initView();
         moviesAdapter = new MoviesAdapter(new MoviesAdapter.OnReachEndListener() {
             @Override
             public void onReachEnd() {
-                mainViewModel.uploadData();
+                mainViewModel.loadMovies();
             }
         }, new MoviesAdapter.OnItemClickListener() {
             @Override
@@ -63,12 +65,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-        mainViewModel.getPage().observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                mainViewModel.loadMovies();
-            }
-        });
 //        buttonPrevious.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {

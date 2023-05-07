@@ -23,12 +23,10 @@ public class MainViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<Movie>> moviesListLD = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private final MutableLiveData<Integer> page = new MutableLiveData<>(1);
-
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-//    private int page = 1;
+    private int page = 1;
 
 
     public MainViewModel(@NonNull Application application) {
@@ -42,15 +40,12 @@ public class MainViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
     }
-    public LiveData<Integer> getPage() {
-        return page;
-    }
 
     public void loadMovies() {
         Boolean loading = isLoading.getValue();
         if (loading != null && loading) return;
-        Log.d(TAG, String.valueOf(page.getValue()));
-        Disposable disposable = ApiFactory.apiService.loadMovies(page.getValue())
+        Log.d(TAG, String.valueOf(page));
+        Disposable disposable = ApiFactory.apiService.loadMovies(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
@@ -68,7 +63,7 @@ public class MainViewModel extends AndroidViewModel {
                 .subscribe(new Consumer<MoviesList>() {
                     @Override
                     public void accept(MoviesList moviesList) throws Throwable {
-                        //page++;
+                        page++;
                         if (moviesListLD.getValue() == null ) {
                             moviesListLD.setValue(moviesList.getMovies());
                         } else {
@@ -92,13 +87,6 @@ public class MainViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.dispose();
-    }
-
-    public void uploadData() {
-        if (page.getValue() != null) {
-            int pages = page.getValue() + 1;
-            page.setValue(pages);
-        }
     }
 
 //    public void pagePrevious() {
